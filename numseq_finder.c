@@ -6,7 +6,7 @@
  * if the longest number sequences are more than 1, prints all of them.
  * Has no limit for input.
  *
- * Using Unrolled Linked List, Dynamic matrix (string table) for result.
+ * Using Linked List with dynamic arrays, Dynamic matrix (string table) for result.
  * Program is complicated by purpose to learn dynamic memory management. */
 
 #define NUM_SEQ_SIZE 64
@@ -66,7 +66,8 @@ int str_copy(char *dest, char *src, int size) {
     return 0;
 }
 
-/* Allocates memory for matrix. If matrix exists, reallocates. */
+/* Allocates memory for matrix.
+ * If matrix exists, reallocates up to [capacity] strings. */
 int matrix_allocate(struct str_table *table, int str_size, int capacity) {
     if (capacity == 1) {
         table->rows = malloc(capacity * sizeof(char *));
@@ -90,7 +91,7 @@ int matrix_allocate(struct str_table *table, int str_size, int capacity) {
     return 0;
 }
 
-/* Finds longest sequences in linked list 
+/* Finds longest sequences in linked list
  * and writes num_seq into string table   */
 int find_longest_sequences(struct node *src, struct str_table *dest) {
     if (!src || !dest) {
@@ -125,10 +126,10 @@ int find_longest_sequences(struct node *src, struct str_table *dest) {
     if (check != 0) {
         return check;
     }
-    
+
     tmp = src;
 
-    /* Searching for number sequences that are 
+    /* Searching for number sequences that are
      * as long as max->num_seq */
     while (tmp) {
         if (tmp != max && max->count == tmp->count) {
@@ -141,11 +142,11 @@ int find_longest_sequences(struct node *src, struct str_table *dest) {
                 }
                 dest->capacity = dest->total_rows+2;
             }
-            
-            check = str_copy(dest->rows[dest->total_rows], 
+
+            check = str_copy(dest->rows[dest->total_rows],
                     tmp->num_seq, max->count+1);
             if (check != 0) {
-                return check;
+                return -1;
             }
             dest->total_rows++;
         }
@@ -158,8 +159,8 @@ int find_longest_sequences(struct node *src, struct str_table *dest) {
 int main() {
     struct node *head = NULL, *tail = NULL;
     enum sequence_state seq_state = SEQUENCE_END;
-     
-    int ch; 
+
+    int ch;
     int malloc_count = 1;
     while ((ch = getchar()) != EOF) {
         if ((ch >= '0') && (ch <= '9')) {
@@ -168,10 +169,12 @@ int main() {
                 case SEQUENCE_END: /* If we starting num sequence */
                     malloc_count = 1;
                     check = add_node(&head, &tail);
+
                     if (check != 0) {
                         fputs("[ERROR] Memory allocation failed.\n", stderr);
                         goto cleanup;
                     }
+
                     seq_state = SEQUENCE_PROCESS;
                     tail->num_seq[tail->count-1] = ch;
                     break;
@@ -181,13 +184,14 @@ int main() {
                         tail->capacity = NUM_SEQ_SIZE*malloc_count;
                         char *tmp = realloc(tail->num_seq,
                                 tail->capacity);
-                        if (!(tmp)) {
+                        if (!tmp) {
                             fputs("[ERROR] Memory reallocation failed.\n",
                                     stderr);
                             goto cleanup;
                         }
                         tail->num_seq = tmp;
                     }
+
                     tail->num_seq[tail->count] = ch;
                     tail->count++;
                     break;
@@ -197,7 +201,7 @@ int main() {
                     break;
             }
         } else {
-                if (head && (seq_state == SEQUENCE_PROCESS 
+                if (head && (seq_state == SEQUENCE_PROCESS
                             && tail->num_seq)) {
                     tail->num_seq[tail->count] = '\0';
                     seq_state = SEQUENCE_END;
@@ -223,7 +227,7 @@ int main() {
         goto cleanup;
     }
 
-    
+
     for (int i = 0; i < num_seq_array->total_rows; i++) {
         printf("%s ", num_seq_array->rows[i]);
     }
