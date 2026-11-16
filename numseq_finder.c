@@ -38,11 +38,11 @@ int add_node(struct node **head, struct node **tail) {
 
     tmp->count = 1;
     tmp->next = NULL;
-    tmp->num_seq = malloc(sizeof(char) * 64);
+    tmp->num_seq = malloc(sizeof(char) * NUM_SEQ_SIZE);
     if (!(tmp->num_seq)) {
         return -1;
     }
-    tmp->capacity = 64;
+    tmp->capacity = NUM_SEQ_SIZE;
 
     if (!*head) {
         *head = tmp;
@@ -158,6 +158,7 @@ int find_longest_sequences(struct node *src, struct str_table *dest) {
 
 int main() {
     struct node *head = NULL, *tail = NULL;
+    struct str_table *num_seq_array = NULL;
     enum sequence_state seq_state = SEQUENCE_END;
 
     int ch;
@@ -216,7 +217,7 @@ int main() {
         seq_state = SEQUENCE_END;
     }
 
-    struct str_table *num_seq_array = malloc(sizeof(struct str_table));
+    num_seq_array = malloc(sizeof(struct str_table));
     if (!num_seq_array) {
         fputs("[ERROR] Matrix allocation failed.", stderr);
         goto cleanup;
