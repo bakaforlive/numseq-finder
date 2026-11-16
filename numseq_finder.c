@@ -40,6 +40,7 @@ int add_node(struct node **head, struct node **tail) {
     tmp->next = NULL;
     tmp->num_seq = malloc(sizeof(char) * NUM_SEQ_SIZE);
     if (!(tmp->num_seq)) {
+        free(tmp);
         return -1;
     }
     tmp->capacity = NUM_SEQ_SIZE;
