@@ -181,7 +181,7 @@ int main() {
                     tail->num_seq[tail->count-1] = ch;
                     break;
                 case SEQUENCE_PROCESS: /* adding elements to num_seq */
-                    if (tail->count == tail->capacity) {
+                    if (tail->count+1 >= tail->capacity) {
                         malloc_count++;
                         tail->capacity = NUM_SEQ_SIZE*malloc_count;
                         char *tmp = realloc(tail->num_seq,
